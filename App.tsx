@@ -54,7 +54,7 @@ const App: React.FC = () => {
 
   const handleGenerate = async () => {
     // Basic validation: at least one field should have content
-    const hasContent = Object.values(inputs).some(val => val.trim().length > 0);
+    const hasContent = Object.values(inputs).some((val) => (val as string).trim().length > 0);
     if (!hasContent) {
       setError("Please provide input in at least one section.");
       return;

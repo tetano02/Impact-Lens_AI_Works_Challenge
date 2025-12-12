@@ -1,11 +1,5 @@
 import { AntiPortfolioData } from '../types';
 
-declare global {
-  interface Window {
-    html2pdf: any;
-  }
-}
-
 export const downloadJSON = (data: AntiPortfolioData) => {
   const jsonString = JSON.stringify(data, null, 2);
   const blob = new Blob([jsonString], { type: "application/json" });
@@ -13,6 +7,74 @@ export const downloadJSON = (data: AntiPortfolioData) => {
   const link = document.createElement("a");
   link.href = url;
   link.download = `impact-lens-${data.meta.viewer}-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+export const downloadHTML = (filename: string) => {
+  const element = document.getElementById('diagnostic-report-content');
+  if (!element) return;
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${filename}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            colors: {
+              brand: {
+                50: '#eef2ff',
+                100: '#e0e7ff',
+                500: '#6366f1',
+                600: '#4f46e5',
+                700: '#4338ca',
+                900: '#312e81',
+              },
+              slate: {
+                850: '#1e293b',
+                900: '#0f172a',
+              }
+            },
+            boxShadow: {
+              'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+              'glow': '0 0 15px rgba(79, 70, 229, 0.3)',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body { background-color: white; color: #0f172a; -webkit-font-smoothing: antialiased; padding: 40px; }
+      .break-inside-avoid { break-inside: avoid; }
+      /* Hide print-only elements that might have been copied */
+      .no-print { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="max-w-5xl mx-auto">
+        ${element.innerHTML}
+    </div>
+</body>
+</html>`;
+
+  const blob = new Blob([htmlContent], { type: "text/html" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${filename}.html`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
@@ -95,63 +157,4 @@ export const downloadMarkdown = (data: AntiPortfolioData) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
-};
-
-export const downloadPDF = (elementId: string, filename: string) => {
-  const element = document.getElementById(elementId);
-  if (!element) {
-    console.error(`Element with id ${elementId} not found`);
-    return;
-  }
-
-  // Check if html2pdf is loaded
-  if (typeof window.html2pdf === 'undefined') {
-    alert("PDF generator library is not loaded. Please wait or refresh.");
-    return;
-  }
-
-  // Clone the element to isolate it from the current page layout (scrolls, margins, etc.)
-  // This prevents blank pages caused by window.scrollY or parent padding.
-  const clone = element.cloneNode(true) as HTMLElement;
-  
-  // Style the clone for the PDF output
-  clone.style.width = '1200px'; // Fixed width to ensure consistent layout
-  clone.style.maxWidth = '1200px';
-  clone.style.padding = '40px';
-  clone.style.backgroundColor = '#ffffff'; // Ensure white background
-  clone.style.margin = '0 auto';
-  
-  // Remove any display:none elements or scripts from clone if necessary
-  const noPrints = clone.querySelectorAll('.no-print');
-  noPrints.forEach(el => el.remove());
-
-  // Create a temporary container to hold the clone
-  const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.top = '0';
-  container.style.left = '0';
-  container.style.zIndex = '-9999'; // Hide behind everything
-  container.style.width = '1200px'; 
-  container.appendChild(clone);
-  document.body.appendChild(container);
-
-  const opt = {
-    margin: [10, 10], // top/bottom margin in mm
-    filename: filename,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2, // 2x scale for retina-like quality
-      useCORS: true,
-      logging: false,
-      scrollY: 0, // CRITICAL: prevents capturing blank space above if user scrolled down
-      windowWidth: 1200, // CRITICAL: ensures media queries match the clone width
-    },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-
-  // Generate PDF from the clone, then clean up
-  window.html2pdf().set(opt).from(clone).save().then(() => {
-    document.body.removeChild(container);
-  });
 };

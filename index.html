@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Impact Lens - Professional Diagnostics</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
@@ -47,17 +46,53 @@
         background: rgba(255, 255, 255, 0.7);
         backdrop-filter: blur(10px);
       }
+      
+      /* PRINT OPTIMIZATION FOR PDF EXPORT */
       @media print {
-        body {
-          -webkit-print-color-adjust: exact;
-          print-color-adjust: exact;
-          background-color: white;
+        @page {
+          margin: 10mm;
+          size: auto;
         }
+        
+        body {
+          /* Force background colors to print exactly as seen on screen */
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          background-color: white !important;
+        }
+
+        /* Hide interactive elements */
         .no-print {
           display: none !important;
         }
-        @page {
-          margin: 1.5cm;
+
+        /* Prevent breaking cards in half across pages */
+        .break-inside-avoid {
+          break-inside: avoid !important;
+          page-break-inside: avoid !important;
+          display: block; /* Ensures block-level break behavior */
+        }
+
+        /* Clean up shadows for crisp PDF text, replace with borders if needed */
+        .shadow-sm, .shadow-md, .shadow-lg, .shadow-xl, .shadow-2xl, .shadow-soft, .shadow-glow {
+          box-shadow: none !important;
+          border: 1px solid #e2e8f0 !important;
+        }
+        
+        /* Ensure text is dark enough */
+        p, span, div {
+          text-shadow: none !important;
+        }
+
+        /* Reset container constraints for full width printing */
+        .max-w-5xl {
+          max-width: none !important;
+          width: 100% !important;
+        }
+        
+        /* Remove extra padding that wastes paper space */
+        .pb-20 {
+          padding-bottom: 0 !important;
         }
       }
     </style>
