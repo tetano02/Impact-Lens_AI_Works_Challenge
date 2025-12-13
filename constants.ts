@@ -40,6 +40,7 @@ ANTI-PORTFOLIO NON-NEGOTIABLE RULES
 5) Trade-offs and failure modes are mandatory. Do not sanitize.
 6) Prefer fewer strong claims over many vague ones.
 7) Do NOT infer sensitive personal attributes.
+8) EXTRACT the identity details from the input into the 'subject' field exactly as provided.
 
 ━━━━━━━━━━━━━━━━━━
 STRICT QUANTITY & LENGTH CONSTRAINTS
@@ -94,6 +95,7 @@ FINAL SELF-CHECK
 ━━━━━━━━━━━━━━━━━━
 
 Before outputting, verify:
+- Did I extract the Subject Name/Role correctly?
 - Did I limit Failure Modes to 2?
 - Did I limit Viewer bullets to 3?
 - Is the Headline short (max 6 words)?
@@ -114,6 +116,16 @@ export const RESPONSE_SCHEMA = {
         version: { type: Type.STRING }
       },
       required: ["viewer", "language", "version"]
+    },
+    subject: {
+      type: Type.OBJECT,
+      properties: {
+        name: { type: Type.STRING },
+        role: { type: Type.STRING },
+        location: { type: Type.STRING },
+        experience: { type: Type.STRING }
+      },
+      required: ["name", "role", "location", "experience"]
     },
     headline: { type: Type.STRING },
     diagnosis_summary: {
@@ -243,6 +255,7 @@ export const RESPONSE_SCHEMA = {
   },
   required: [
     "meta",
+    "subject",
     "headline",
     "diagnosis_summary",
     "systemic_effects_timeline",

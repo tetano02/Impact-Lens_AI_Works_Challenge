@@ -4,9 +4,10 @@ import { generateDiagnostic } from './services/geminiService';
 import { ViewerType, AntiPortfolioData, DiagnosticInputs, Attachment } from './types';
 import { ViewerSelector } from './components/ViewerSelector';
 import { DiagnosticReport } from './components/DiagnosticReport';
-import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Sparkles, GitPullRequest, Zap, BookOpen } from 'lucide-react';
+import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Sparkles, GitPullRequest, Zap, BookOpen, User } from 'lucide-react';
 
 const DefaultInputs: DiagnosticInputs = {
+  identity: '', // Populated by state
   workTraces: `Significant Decisions:
 - Chose to rewrite the core billing engine in Rust instead of Python.
   > Trade-off: Development slowed down by 3 weeks initially.
@@ -46,6 +47,12 @@ const TAB_CONFIG: Record<keyof DiagnosticInputs, {
     shortDesc: string; 
     placeholder: string 
 }> = {
+    identity: {
+        label: 'Identity',
+        icon: <User size={16} />,
+        shortDesc: 'Name, Role & Basics',
+        placeholder: "" // Handled by custom form
+    },
     workTraces: {
         label: 'Key Decisions',
         icon: <GitPullRequest size={16} />,
@@ -105,7 +112,15 @@ const LogoIcon = () => (
 
 const App: React.FC = () => {
   const [inputs, setInputs] = useState<DiagnosticInputs>(DefaultInputs);
-  const [activeTab, setActiveTab] = useState<keyof DiagnosticInputs>('workTraces');
+  // Separate state for structured identity fields
+  const [identity, setIdentity] = useState({
+    name: 'Alex Chen',
+    role: 'Senior Staff Engineer',
+    location: 'San Francisco / Remote',
+    experience: '12'
+  });
+
+  const [activeTab, setActiveTab] = useState<keyof DiagnosticInputs>('identity');
   const [viewer, setViewer] = useState<ViewerType>('recruiter');
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<AntiPortfolioData | null>(null);
@@ -121,12 +136,22 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Sync structured identity fields to the single text input required by the API
+  useEffect(() => {
+    const formattedIdentity = `Name: ${identity.name}\nRole: ${identity.role}\nLocation: ${identity.location}\nYears of Experience: ${identity.experience}`;
+    setInputs(prev => {
+        if (prev.identity === formattedIdentity) return prev;
+        return { ...prev, identity: formattedIdentity };
+    });
+  }, [identity]);
+
   const handleInputChange = (field: keyof DiagnosticInputs, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
   };
 
   const handleClear = () => {
     setInputs({
+      identity: '',
       workTraces: '',
       friction: '',
       failures: '',
@@ -134,6 +159,7 @@ const App: React.FC = () => {
       nonNegotiables: '',
       background: ''
     });
+    setIdentity({ name: '', role: '', location: '', experience: '' });
     setAttachments([]);
   };
 
@@ -210,7 +236,7 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main container logic: Only constrain height and center when in input mode (!data) */}
+      {/* Main container logic */}
       <main className={`
         container mx-auto px-4 print:pt-0 print:pb-0 
         ${!data 
@@ -323,15 +349,60 @@ const App: React.FC = () => {
                             </div>
                         </div>
                         
-                        {/* Text Area Container */}
-                        <div className="flex flex-col flex-1 group">
-                            <textarea 
-                                value={inputs[activeTab]}
-                                onChange={(e) => handleInputChange(activeTab, e.target.value)}
-                                className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
-                                  focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[140px]"
-                                placeholder={activeConfig.placeholder}
-                            />
+                        {/* Content Container - Conditional Rendering */}
+                        <div className="flex flex-col flex-1 group min-h-[140px]">
+                            {activeTab === 'identity' ? (
+                                <div className="flex flex-col gap-4 h-full overflow-y-auto pr-2">
+                                    <div className="space-y-1.5">
+                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Full Name</label>
+                                        <input 
+                                            type="text" 
+                                            value={identity.name}
+                                            onChange={e => setIdentity(prev => ({...prev, name: e.target.value}))}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            placeholder="e.g. Alex Chen"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Current Role</label>
+                                        <input 
+                                            type="text" 
+                                            value={identity.role}
+                                            onChange={e => setIdentity(prev => ({...prev, role: e.target.value}))}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            placeholder="e.g. Senior Product Manager"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Location</label>
+                                        <input 
+                                            type="text" 
+                                            value={identity.location}
+                                            onChange={e => setIdentity(prev => ({...prev, location: e.target.value}))}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            placeholder="e.g. London / Remote"
+                                        />
+                                    </div>
+                                    <div className="space-y-1.5">
+                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Years of Exp.</label>
+                                        <input 
+                                            type="text" 
+                                            value={identity.experience}
+                                            onChange={e => setIdentity(prev => ({...prev, experience: e.target.value}))}
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            placeholder="e.g. 8"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                <textarea 
+                                    value={inputs[activeTab]}
+                                    onChange={(e) => handleInputChange(activeTab, e.target.value)}
+                                    className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
+                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[140px]"
+                                    placeholder={activeConfig.placeholder}
+                                />
+                            )}
                         </div>
 
                         {/* Footer Controls within Card */}

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { AntiPortfolioData } from '../types';
-import { AlertTriangle, CheckCircle2, XCircle, Activity, ShieldAlert, Crosshair, ArrowRight, FileText, Search, Zap, FileJson, FileCode } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, XCircle, Activity, ShieldAlert, Crosshair, ArrowRight, FileText, Search, Zap, FileJson, FileCode, MapPin, Clock, User, Briefcase } from 'lucide-react';
 import { downloadJSON, downloadMarkdown, downloadHTML } from '../utils/exportUtils';
 
 interface Props {
@@ -51,6 +51,26 @@ export const DiagnosticReport: React.FC<Props> = ({ data }) => {
                 <div className="font-mono text-xs text-slate-400">Diagnostic ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}</div>
             </div>
             
+            {/* Subject Identity Data Display */}
+            <div className="mb-8 p-5 bg-white border border-slate-200 rounded-2xl shadow-sm grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 break-inside-avoid">
+                <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1.5"><User size={10} /> Subject</span>
+                    <span className="text-sm font-bold text-slate-900 truncate">{data.subject?.name || "Anonymous"}</span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1.5"><Briefcase size={10} /> Role</span>
+                    <span className="text-sm font-bold text-slate-900 truncate">{data.subject?.role || "Not specified"}</span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1.5"><MapPin size={10} /> Location</span>
+                    <span className="text-sm font-bold text-slate-900 truncate">{data.subject?.location || "Remote"}</span>
+                </div>
+                <div className="flex flex-col">
+                    <span className="text-[10px] uppercase font-bold text-slate-400 mb-1 flex items-center gap-1.5"><Clock size={10} /> Exp</span>
+                    <span className="text-sm font-bold text-slate-900 truncate">{data.subject?.experience ? `${data.subject.experience} Years` : "N/A"}</span>
+                </div>
+            </div>
+
             <h1 className="text-3xl md:text-5xl font-extrabold text-slate-900 mb-6 leading-tight tracking-tight print:text-4xl print:mb-4">
             {data.headline}
             </h1>

@@ -9,6 +9,7 @@ export interface Attachment {
 }
 
 export interface DiagnosticInputs {
+  identity: string;
   workTraces: string;
   friction: string;
   failures: string;
@@ -68,6 +69,12 @@ export interface AntiPortfolioData {
     viewer: ViewerType;
     language: string;
     version: string;
+  };
+  subject: {
+    name: string;
+    role: string;
+    location: string;
+    experience: string;
   };
   headline: string;
   diagnosis_summary: string[];

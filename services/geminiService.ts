@@ -29,27 +29,31 @@ strictly adhering to the schema.
 INPUT SECTIONS
 ━━━━━━━━━━━━━━━━━━
 
-SECTION A — WORK TRACES
+SECTION A — IDENTITY
+(Basic personal details & role context)
+${inputs.identity || "No text data provided."}
+
+SECTION B — WORK TRACES
 (Descriptions of projects, products, decisions, outcomes, artifacts, links)
 ${inputs.workTraces || "No text data provided."}
 
-SECTION B — FRICTION & CONFLICT
+SECTION C — FRICTION & CONFLICT
 (Repeated tensions, conflicts with people or systems, things that “never worked”)
 ${inputs.friction || "No text data provided."}
 
-SECTION C — FAILURES & REGRETS
+SECTION D — FAILURES & REGRETS
 (Explicit failures, things that went wrong, lessons that still hurt)
 ${inputs.failures || "No text data provided."}
 
-SECTION D — STRONG PREFERENCES
+SECTION E — STRONG PREFERENCES
 (What this person consistently likes, hates, avoids, or insists on)
 ${inputs.preferences || "No text data provided."}
 
-SECTION E — NON-NEGOTIABLES
+SECTION F — NON-NEGOTIABLES
 (Rules, boundaries, principles they refuse to break)
 ${inputs.nonNegotiables || "No text data provided."}
 
-SECTION F — OPTIONAL BACKGROUND SIGNALS
+SECTION G — OPTIONAL BACKGROUND SIGNALS
 (CV text, LinkedIn export, bios — treat as LOW-SIGNAL metadata only)
 ${inputs.background || "No text data provided."}
 
