@@ -4,7 +4,7 @@ import { generateDiagnostic } from './services/geminiService';
 import { ViewerType, AntiPortfolioData, DiagnosticInputs, Attachment } from './types';
 import { ViewerSelector } from './components/ViewerSelector';
 import { DiagnosticReport } from './components/DiagnosticReport';
-import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Maximize2, Minimize2, Sparkles } from 'lucide-react';
+import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Maximize2, Sparkles } from 'lucide-react';
 
 const DefaultInputs: DiagnosticInputs = {
   workTraces: `Projects:
@@ -20,6 +20,51 @@ const DefaultInputs: DiagnosticInputs = {
 - I will not work on weekends unless the building is on fire.`,
   background: `Experience:
 - 5 years as Full Stack Dev at Startup X`
+};
+
+// Rich configuration for tabs to improve UX guidance
+const TAB_CONFIG: Record<keyof DiagnosticInputs, { 
+    label: string; 
+    icon: React.ReactNode; 
+    shortDesc: string; 
+    placeholder: string 
+}> = {
+    workTraces: {
+        label: 'Traces',
+        icon: <Briefcase size={16} />,
+        shortDesc: 'Projects, Decisions & Outcomes',
+        placeholder: "What have you actually built or shipped?\n\nDon't just list job titles. Describe specific projects, the hard technical or strategic decisions you made, and the tangible results.\n\nExample:\n- Architected the new payment flow (Decision: Stripe over Adyen due to dev experience).\n- Result: Reduced checkout time by 15%."
+    },
+    friction: {
+        label: 'Friction',
+        icon: <AlertOctagon size={16} />,
+        shortDesc: 'Conflicts & Tensions',
+        placeholder: "Where do you typically clash with others?\n\nBe honest about what annoys you in a team environment. What kind of people or processes create friction with you?\n\nExample:\n- I get frustrated by meetings with no clear agenda.\n- I often argue with PMs who change scope last minute without considering debt."
+    },
+    failures: {
+        label: 'Failures',
+        icon: <Skull size={16} />,
+        shortDesc: 'Regrets & Lessons',
+        placeholder: "What went wrong?\n\nA clean record is suspicious. List significant failures, production incidents, or bad hires, and what you learned from them.\n\nExample:\n- I delayed a launch by 2 weeks because I was too perfectionist about the CSS.\n- I accidentally wiped a production table; now I'm obsessive about backups."
+    },
+    preferences: {
+        label: 'Prefs',
+        icon: <ThumbsUp size={16} />,
+        shortDesc: 'Working Style & Philosophy',
+        placeholder: "How do you do your best work?\n\nAsync vs Sync? Solo vs Pair programming? Quick hacks vs Engineered solutions?\n\nExample:\n- I need 4 hours of uninterrupted deep work in the mornings.\n- I prefer written specs over verbal brainstorming.\n- 'Done is better than perfect'."
+    },
+    nonNegotiables: {
+        label: 'Rules',
+        icon: <ShieldBan size={16} />,
+        shortDesc: 'Hard Boundaries',
+        placeholder: "What will you absolutely NOT tolerate?\n\nExample:\n- I will not work on gambling or crypto products.\n- I refuse to be on-call on weekends.\n- I need full autonomy on tool selection."
+    },
+    background: {
+        label: 'Context',
+        icon: <FileText size={16} />,
+        shortDesc: 'CV & Bio (Raw)',
+        placeholder: "Paste your LinkedIn 'About' section, your raw Resume text, or a bio here.\n\nThis provides background context for the AI, but carries less weight than specific behaviors."
+    }
 };
 
 const App: React.FC = () => {
@@ -97,14 +142,7 @@ const App: React.FC = () => {
     }
   };
 
-  const tabs: { id: keyof DiagnosticInputs; label: string; icon: React.ReactNode }[] = [
-    { id: 'workTraces', label: 'Traces', icon: <Briefcase size={16} /> },
-    { id: 'friction', label: 'Friction', icon: <AlertOctagon size={16} /> },
-    { id: 'failures', label: 'Failures', icon: <Skull size={16} /> },
-    { id: 'preferences', label: 'Prefs', icon: <ThumbsUp size={16} /> },
-    { id: 'nonNegotiables', label: 'Rules', icon: <ShieldBan size={16} /> },
-    { id: 'background', label: 'Context', icon: <FileText size={16} /> },
-  ];
+  const activeConfig = TAB_CONFIG[activeTab];
 
   return (
     <div className="min-h-screen font-sans selection:bg-brand-200 selection:text-brand-900 bg-slate-50">
@@ -131,19 +169,29 @@ const App: React.FC = () => {
         </div>
       </nav>
 
-      <main className="container mx-auto pt-20 px-4 pb-10 print:pt-0 print:pb-0 h-[calc(100vh-1rem)] flex flex-col justify-center">
+      {/* Main container logic: Only constrain height and center when in input mode (!data) */}
+      <main className={`
+        container mx-auto px-4 print:pt-0 print:pb-0 
+        ${!data 
+            ? 'pt-20 pb-10 h-[calc(100vh-1rem)] flex flex-col justify-center' // Input Mode: Centered, Fixed Height
+            : 'pt-24 pb-20' // Report Mode: Normal Flow, Top Padding for Nav
+        }
+      `}>
         {!data && (
             <div className="max-w-5xl mx-auto w-full">
                 
-                <div className="flex justify-between items-end mb-4 px-1">
+                <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 px-1 gap-4">
                    <div>
-                      <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                        Analyze Systemic <span className="text-brand-600">Impact.</span>
+                      <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+                        Reveal Your <span className="text-brand-600">Professional DNA.</span>
                       </h1>
+                      <p className="text-lg text-slate-500 font-medium max-w-2xl">
+                        It matters who you are, not just what you have done.
+                      </p>
                    </div>
-                   <div className="hidden md:flex gap-4 text-xs font-medium text-slate-400">
-                      <span className="flex items-center gap-1"><Sparkles size={12} className="text-brand-400"/> Anti-Fluff</span>
-                      <span className="flex items-center gap-1"><Sparkles size={12} className="text-brand-400"/> Predictive</span>
+                   <div className="hidden md:flex gap-4 text-xs font-medium text-slate-400 pb-2">
+                      <span className="flex items-center gap-1"><Sparkles size={12} className="text-brand-400"/> Identity-First</span>
+                      <span className="flex items-center gap-1"><Sparkles size={12} className="text-brand-400"/> Systemic Impact</span>
                    </div>
                 </div>
 
@@ -151,22 +199,25 @@ const App: React.FC = () => {
                     
                     {/* Compact Sidebar Tabs */}
                     <div className="w-full md:w-56 bg-slate-50 border-r border-slate-200 p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1 scrollbar-hide">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`
-                                    flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap
-                                    ${activeTab === tab.id 
-                                        ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-200' 
-                                        : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                                    }
-                                `}
-                            >
-                                <span className={activeTab === tab.id ? 'text-brand-500' : 'text-slate-400'}>{tab.icon}</span>
-                                {tab.label}
-                            </button>
-                        ))}
+                        {(Object.keys(TAB_CONFIG) as Array<keyof DiagnosticInputs>).map((tabKey) => {
+                            const config = TAB_CONFIG[tabKey];
+                            return (
+                                <button
+                                    key={tabKey}
+                                    onClick={() => setActiveTab(tabKey)}
+                                    className={`
+                                        flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap
+                                        ${activeTab === tabKey 
+                                            ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-200' 
+                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                                        }
+                                    `}
+                                >
+                                    <span className={activeTab === tabKey ? 'text-brand-500' : 'text-slate-400'}>{config.icon}</span>
+                                    {config.label}
+                                </button>
+                            );
+                        })}
                     </div>
 
                     {/* Input Area */}
@@ -176,15 +227,10 @@ const App: React.FC = () => {
                         <div className="flex justify-between items-center mb-3">
                             <div className="flex items-baseline gap-2">
                                 <h3 className="font-bold text-slate-900 text-sm uppercase tracking-wide">
-                                    {tabs.find(t => t.id === activeTab)?.label}
+                                    {activeConfig.label}
                                 </h3>
-                                <p className="text-xs text-slate-400 hidden sm:block truncate max-w-[200px]">
-                                    {activeTab === 'workTraces' && "Decisions, outcomes, artifacts."}
-                                    {activeTab === 'friction' && "Tensions and conflicts."}
-                                    {activeTab === 'failures' && "Failures and lessons."}
-                                    {activeTab === 'preferences' && "Likes and dislikes."}
-                                    {activeTab === 'nonNegotiables' && "Hard boundaries."}
-                                    {activeTab === 'background' && "CV and Bio."}
+                                <p className="text-xs text-slate-400 hidden sm:block truncate max-w-[300px] border-l border-slate-200 pl-2 ml-1">
+                                    {activeConfig.shortDesc}
                                 </p>
                             </div>
                             <div className="flex items-center gap-2">
@@ -192,7 +238,7 @@ const App: React.FC = () => {
                                   onClick={handleClear} 
                                   className="text-[10px] font-bold text-slate-400 hover:text-rose-500 flex items-center gap-1 px-2 py-1 rounded bg-slate-50 hover:bg-rose-50 transition-colors"
                                 >
-                                    <Trash2 size={10} /> CLEAR
+                                    <Trash2 size={10} /> CLEAR ALL
                                 </button>
                             </div>
                         </div>
@@ -229,31 +275,36 @@ const App: React.FC = () => {
                             {isExpanded && (
                                 <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
                                    <div className="font-bold text-lg text-slate-900 flex items-center gap-2">
-                                      {tabs.find(t => t.id === activeTab)?.icon}
-                                      {tabs.find(t => t.id === activeTab)?.label} Input
+                                      {activeConfig.icon}
+                                      {activeConfig.label} Input
+                                      <span className="text-slate-400 font-normal text-sm ml-2">- {activeConfig.shortDesc}</span>
                                    </div>
-                                   <button onClick={() => setIsExpanded(false)} className="p-2 hover:bg-slate-100 rounded-full">
-                                      <Minimize2 size={20} className="text-slate-500"/>
+                                   <button 
+                                      onClick={() => setIsExpanded(false)} 
+                                      className="p-2 hover:bg-slate-100 rounded-full text-slate-500 hover:text-slate-900 transition-colors"
+                                      title="Close Full Screen"
+                                   >
+                                      <X size={24} />
                                    </button>
                                 </div>
                             )}
                             
-                            <div className="relative flex-1">
+                            <div className="relative flex-1 group">
                                 <textarea 
                                     value={inputs[activeTab]}
                                     onChange={(e) => handleInputChange(activeTab, e.target.value)}
                                     className={`
                                       w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
-                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-300
+                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400
                                       ${!isExpanded ? 'min-h-[140px]' : ''}
                                     `}
-                                    placeholder={`Type or paste ${tabs.find(t => t.id === activeTab)?.label.toLowerCase()} details here...`}
+                                    placeholder={activeConfig.placeholder}
                                 />
                                 {!isExpanded && (
                                   <button 
                                     onClick={() => setIsExpanded(true)}
-                                    className="absolute bottom-3 right-3 p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-brand-600 hover:border-brand-300 shadow-sm transition-all"
-                                    title="Expand editor"
+                                    className="absolute bottom-3 right-3 p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-brand-600 hover:border-brand-300 shadow-sm transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
+                                    title="Expand to Full Screen"
                                   >
                                     <Maximize2 size={14} />
                                   </button>
@@ -262,11 +313,12 @@ const App: React.FC = () => {
                         </div>
 
                         {/* Footer Controls within Card */}
-                        <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
                             <div className="md:col-span-8">
                                 <ViewerSelector selected={viewer} onChange={setViewer} />
                             </div>
                             <div className="md:col-span-4">
+                                <label className="text-[10px] font-bold uppercase text-slate-400 tracking-widest mb-2 block">Action</label>
                                 <button 
                                     onClick={handleGenerate}
                                     disabled={loading}
