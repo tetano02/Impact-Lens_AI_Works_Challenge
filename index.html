@@ -8,6 +8,14 @@
     <script>
       // POLYFILL: Prevents "process is not defined" error in browser environments
       window.process = window.process || { env: {} };
+
+      // HACK: Suppress the Tailwind CDN warning to keep the console clean for the user.
+      // This warning is expected in this no-build environment and is safe to ignore.
+      const originalWarn = console.warn;
+      console.warn = (...args) => {
+        if (args[0] && typeof args[0] === 'string' && args[0].includes('cdn.tailwindcss.com')) return;
+        originalWarn.apply(console, args);
+      };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -115,5 +123,6 @@
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="./index.tsx"></script>
   </body>
 </html>
