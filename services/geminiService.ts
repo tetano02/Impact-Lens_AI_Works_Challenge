@@ -12,7 +12,7 @@ export const generateDiagnostic = async (
 
   const textPrompt = `
 Viewer lens: ${viewer}
-Language: it
+Language: en
 Version: v1.1
 
 You will receive structured raw input collected through a multi-section interface, AND potentially attached documents (PDFs, Images, Text files).

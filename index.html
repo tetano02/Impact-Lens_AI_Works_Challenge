@@ -1,10 +1,12 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Impact Lens - Professional Diagnostics</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👁️</text></svg>">
+    <!-- New Logo: Document + Lens on Purple Background -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='24' fill='%234f46e5'/%3E%3Cpath d='M28 20h44a6 6 0 0 1 6 6v48a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6V26a6 6 0 0 1 6-6z' fill='white'/%3E%3Cpath d='M38 38h24M38 48h24M38 58h12' stroke='%23e0e7ff' stroke-width='4' stroke-linecap='round'/%3E%3Ccircle cx='65' cy='65' r='14' fill='white' stroke='%234f46e5' stroke-width='6'/%3E%3Cline x1='75' y1='75' x2='86' y2='86' stroke='white' stroke-width='6' stroke-linecap='round'/%3E%3C/svg%3E">
     <script>
       // POLYFILL: Prevents "process is not defined" error in browser environments
       window.process = window.process || { env: {} };
@@ -44,6 +46,15 @@
             boxShadow: {
               'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
               'glow': '0 0 15px rgba(79, 70, 229, 0.3)',
+            },
+            animation: {
+              'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+            },
+            keyframes: {
+              fadeInUp: {
+                '0%': { opacity: '0', transform: 'translateY(10px)' },
+                '100%': { opacity: '1', transform: 'translateY(0)' },
+              }
             }
           }
         }

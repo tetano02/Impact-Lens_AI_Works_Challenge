@@ -1,25 +1,42 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { generateDiagnostic } from './services/geminiService';
 import { ViewerType, AntiPortfolioData, DiagnosticInputs, Attachment } from './types';
 import { ViewerSelector } from './components/ViewerSelector';
 import { DiagnosticReport } from './components/DiagnosticReport';
-import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Maximize2, Sparkles } from 'lucide-react';
+import { Search, ArrowRight, Trash2, RefreshCcw, Briefcase, AlertOctagon, Skull, ThumbsUp, ShieldBan, FileText, Upload, Paperclip, X, Sparkles, GitPullRequest, Zap, BookOpen } from 'lucide-react';
 
 const DefaultInputs: DiagnosticInputs = {
-  workTraces: `Projects:
-- Built a CLI tool for automating deployment because I hate clicking buttons.
-- Refactored legacy codebase reducing technical debt by 40%.`,
-  friction: `Conflicts:
-- I often clash with "visionary" types who don't care about implementation details.`,
-  failures: `Failures:
-- Deleted production database once. Added safeguards immediately.`,
-  preferences: `Philosophy:
-- "Done is better than perfect."`,
-  nonNegotiables: `Rules:
-- I will not work on weekends unless the building is on fire.`,
-  background: `Experience:
-- 5 years as Full Stack Dev at Startup X`
+  workTraces: `Significant Decisions:
+- Chose to rewrite the core billing engine in Rust instead of Python.
+  > Trade-off: Development slowed down by 3 weeks initially.
+  > Outcome: Zero concurrency bugs in production for 2 years. High upfront cost, low maintenance.
+
+- Deprecated the legacy public API without full backward compatibility.
+  > Trade-off: Angry partners for 1 month vs. 50% faster feature shipping for internal teams.
+  > I prioritized internal velocity over external stability.`,
+  friction: `Who finds me difficult?
+- Product Managers who love "brainstorming" hate me. I kill ideas that aren't technically feasible within 5 minutes.
+- Junior devs find me intimidating because I demand comprehensive tests before reviewing PRs.
+- I tend to bypass "middle management" to get answers directly from the source.`,
+  failures: `The Anti-Portfolio (My expensive mistakes):
+- I over-engineered a microservices architecture for a startup that only had 500 users.
+  > Cost: We burned 6 months of runway on infra instead of product market fit.
+  > Lesson: Monolith first, always.
+
+- I hired a "brilliant jerk" because I ignored the culture fit warnings.
+  > Cost: Two senior engineers quit within 3 months.`,
+  preferences: `My User Manual:
+- I work in bursts. Don't expect me to answer Slack instantly between 9 AM and 1 PM.
+- I need written specs. If it's not written down, it doesn't exist.
+- I prefer brutal honesty over "sandwich feedback".`,
+  nonNegotiables: `Hard Boundaries:
+- I will not install monitoring software on my personal device.
+- I will not work on gambling or predatory lending products.
+- I refuse to attend "status update" meetings that could be an email.`,
+  background: `Context:
+- 7 years in Backend Engineering.
+- Specialized in High-Frequency Trading systems (fintech) and then moved to HealthTech.`
 };
 
 // Rich configuration for tabs to improve UX guidance
@@ -30,42 +47,61 @@ const TAB_CONFIG: Record<keyof DiagnosticInputs, {
     placeholder: string 
 }> = {
     workTraces: {
-        label: 'Traces',
-        icon: <Briefcase size={16} />,
-        shortDesc: 'Projects, Decisions & Outcomes',
-        placeholder: "What have you actually built or shipped?\n\nDon't just list job titles. Describe specific projects, the hard technical or strategic decisions you made, and the tangible results.\n\nExample:\n- Architected the new payment flow (Decision: Stripe over Adyen due to dev experience).\n- Result: Reduced checkout time by 15%."
+        label: 'Key Decisions',
+        icon: <GitPullRequest size={16} />,
+        shortDesc: 'Trade-offs & Hard Choices',
+        placeholder: "Don't list your job duties.\n\nList the 3-5 hardest decisions you made.\n\n1. What was the problem?\n2. What did you decide?\n3. What was the TRADE-OFF? (What did you sacrifice?)\n\nExample:\n- chose stability over speed.\n- chose technical debt over missing a deadline.\n- chose to kill a feature customers loved because it wasn't profitable."
     },
     friction: {
-        label: 'Friction',
-        icon: <AlertOctagon size={16} />,
-        shortDesc: 'Conflicts & Tensions',
-        placeholder: "Where do you typically clash with others?\n\nBe honest about what annoys you in a team environment. What kind of people or processes create friction with you?\n\nExample:\n- I get frustrated by meetings with no clear agenda.\n- I often argue with PMs who change scope last minute without considering debt."
+        label: 'Friction Points',
+        icon: <Zap size={16} />,
+        shortDesc: 'Where do you cause tension?',
+        placeholder: "Be brutally honest. Who finds it hard to work with you?\n\n- Do designers think you are too rigid?\n- Do PMs think you are too slow/fast?\n- Do you challenge authority?\n- Do you ignore processes you think are stupid?\n\n(The AI needs this to calculate your 'Systemic Cost')"
     },
     failures: {
-        label: 'Failures',
+        label: 'Anti-Portfolio',
         icon: <Skull size={16} />,
-        shortDesc: 'Regrets & Lessons',
-        placeholder: "What went wrong?\n\nA clean record is suspicious. List significant failures, production incidents, or bad hires, and what you learned from them.\n\nExample:\n- I delayed a launch by 2 weeks because I was too perfectionist about the CSS.\n- I accidentally wiped a production table; now I'm obsessive about backups."
+        shortDesc: 'Expensive Failures & Regrets',
+        placeholder: "This is the most important section.\n\nList your specific failures.\n\n- When did you crash production?\n- When did you make a bad hire?\n- When did you build the wrong thing?\n- When did you burn out?\n\nWhat did you learn from the pain?"
     },
     preferences: {
-        label: 'Prefs',
-        icon: <ThumbsUp size={16} />,
-        shortDesc: 'Working Style & Philosophy',
-        placeholder: "How do you do your best work?\n\nAsync vs Sync? Solo vs Pair programming? Quick hacks vs Engineered solutions?\n\nExample:\n- I need 4 hours of uninterrupted deep work in the mornings.\n- I prefer written specs over verbal brainstorming.\n- 'Done is better than perfect'."
+        label: 'My Manual',
+        icon: <BookOpen size={16} />,
+        shortDesc: 'How to operate you',
+        placeholder: "How does someone get the best ROI out of you?\n\n- Async vs Sync?\n- Verbal vs Written?\n- Solo vs Team?\n- What drains your energy?\n- What gives you energy?"
     },
     nonNegotiables: {
-        label: 'Rules',
+        label: 'Boundaries',
         icon: <ShieldBan size={16} />,
-        shortDesc: 'Hard Boundaries',
-        placeholder: "What will you absolutely NOT tolerate?\n\nExample:\n- I will not work on gambling or crypto products.\n- I refuse to be on-call on weekends.\n- I need full autonomy on tool selection."
+        shortDesc: 'The "No" List',
+        placeholder: "What are your absolute dealbreakers?\n\n- Ethical lines?\n- Time boundaries?\n- Process requirements?\n- What will make you quit on the spot?"
     },
     background: {
         label: 'Context',
         icon: <FileText size={16} />,
-        shortDesc: 'CV & Bio (Raw)',
-        placeholder: "Paste your LinkedIn 'About' section, your raw Resume text, or a bio here.\n\nThis provides background context for the AI, but carries less weight than specific behaviors."
+        shortDesc: 'Raw Background (CV/Bio)',
+        placeholder: "Paste your Bio, LinkedIn Summary, or Resume text here.\n\nThis provides the 'setting' for the diagnosis, but the other tabs provide the 'signal'."
     }
 };
+
+const TAGLINES = [
+    "It matters who you are, not just what you have done.",
+    "Your weaknesses are the rent you pay for your strengths.",
+    "Resumes list features. We analyze the operating system.",
+    "Hiring is a prediction problem, not a history lesson.",
+    "Understand the systemic impact you actually create."
+];
+
+// The new "Impact Lens" logo component
+const LogoIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" className="w-8 h-8 rounded-[8px] shadow-glow">
+        <rect width="100" height="100" rx="24" fill="#4f46e5" />
+        <path d="M28 20h44a6 6 0 0 1 6 6v48a6 6 0 0 1-6 6H28a6 6 0 0 1-6-6V26a6 6 0 0 1 6-6z" fill="white" />
+        <path d="M38 38h24M38 48h24M38 58h12" stroke="#e0e7ff" strokeWidth="4" strokeLinecap="round" />
+        <circle cx="65" cy="65" r="14" fill="white" stroke="#4f46e5" strokeWidth="6" />
+        <line x1="75" y1="75" x2="86" y2="86" stroke="white" strokeWidth="6" strokeLinecap="round" />
+    </svg>
+);
 
 const App: React.FC = () => {
   const [inputs, setInputs] = useState<DiagnosticInputs>(DefaultInputs);
@@ -75,8 +111,15 @@ const App: React.FC = () => {
   const [data, setData] = useState<AntiPortfolioData | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [taglineIndex, setTaglineIndex] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+        setTaglineIndex((prev) => (prev + 1) % TAGLINES.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleInputChange = (field: keyof DiagnosticInputs, value: string) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -150,10 +193,8 @@ const App: React.FC = () => {
       {/* Compact Header */}
       <nav className="fixed top-0 left-0 right-0 bg-white/90 backdrop-blur-md border-b border-slate-200 z-40 no-print h-14 flex items-center">
         <div className="container mx-auto px-4 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-                <div className="bg-brand-600 p-1 rounded-md text-white shadow-glow">
-                    <Search size={16} />
-                </div>
+            <div className="flex items-center gap-3">
+                <LogoIcon />
                 <span className="font-bold text-slate-900 tracking-tight text-lg">Impact Lens</span>
                 <span className="hidden md:inline-block h-4 w-px bg-slate-200 mx-2"></span>
                 <span className="hidden md:inline-block text-xs font-medium text-slate-400">Professional DNA Diagnostics</span>
@@ -185,9 +226,11 @@ const App: React.FC = () => {
                       <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
                         Reveal Your <span className="text-brand-600">Professional DNA.</span>
                       </h1>
-                      <p className="text-lg text-slate-500 font-medium max-w-2xl">
-                        It matters who you are, not just what you have done.
-                      </p>
+                      <div className="h-8 mt-1 overflow-hidden relative">
+                         <p key={taglineIndex} className="text-lg text-slate-500 font-medium max-w-2xl animate-fade-in-up absolute top-0 left-0">
+                            {TAGLINES[taglineIndex]}
+                         </p>
+                      </div>
                    </div>
                    <div className="hidden md:flex gap-4 text-xs font-medium text-slate-400 pb-2">
                       <span className="flex items-center gap-1"><Sparkles size={12} className="text-brand-400"/> Identity-First</span>
@@ -197,27 +240,64 @@ const App: React.FC = () => {
 
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row h-auto md:min-h-[480px]">
                     
-                    {/* Compact Sidebar Tabs */}
-                    <div className="w-full md:w-56 bg-slate-50 border-r border-slate-200 p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1 scrollbar-hide">
-                        {(Object.keys(TAB_CONFIG) as Array<keyof DiagnosticInputs>).map((tabKey) => {
-                            const config = TAB_CONFIG[tabKey];
-                            return (
-                                <button
-                                    key={tabKey}
-                                    onClick={() => setActiveTab(tabKey)}
-                                    className={`
-                                        flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap
-                                        ${activeTab === tabKey 
-                                            ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-200' 
-                                            : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
-                                        }
-                                    `}
-                                >
-                                    <span className={activeTab === tabKey ? 'text-brand-500' : 'text-slate-400'}>{config.icon}</span>
-                                    {config.label}
-                                </button>
-                            );
-                        })}
+                    {/* Compact Sidebar Tabs & Tools */}
+                    <div className="w-full md:w-60 bg-slate-50 border-r border-slate-200 flex flex-col">
+                        
+                        {/* Scrollable Tabs List */}
+                        <div className="flex-1 p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1 scrollbar-hide">
+                            {(Object.keys(TAB_CONFIG) as Array<keyof DiagnosticInputs>).map((tabKey) => {
+                                const config = TAB_CONFIG[tabKey];
+                                return (
+                                    <button
+                                        key={tabKey}
+                                        onClick={() => setActiveTab(tabKey)}
+                                        className={`
+                                            flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap
+                                            ${activeTab === tabKey 
+                                                ? 'bg-white text-brand-600 shadow-sm ring-1 ring-slate-200' 
+                                                : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                                            }
+                                        `}
+                                    >
+                                        <span className={activeTab === tabKey ? 'text-brand-500' : 'text-slate-400'}>{config.icon}</span>
+                                        {config.label}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
+                        {/* Global Attachments - Bottom of Sidebar */}
+                        <div className="p-3 border-t border-slate-200 bg-slate-100/50">
+                             <div className="text-[10px] font-bold uppercase text-slate-400 mb-2 flex items-center gap-1">
+                                <Paperclip size={10} /> Global Artifacts
+                             </div>
+                             
+                             {attachments.length > 0 && (
+                                <div className="flex flex-col gap-1.5 mb-3">
+                                  {attachments.map(att => (
+                                    <div key={att.id} className="flex items-center justify-between bg-white border border-slate-200 text-slate-700 px-2 py-1.5 rounded shadow-sm text-xs font-medium">
+                                      <span className="truncate w-32">{att.name}</span>
+                                      <button onClick={() => removeAttachment(att.id)} className="hover:text-rose-500 text-slate-400"><X size={12} /></button>
+                                    </div>
+                                  ))}
+                                </div>
+                             )}
+
+                             <input 
+                                type="file" 
+                                ref={fileInputRef}
+                                onChange={handleFileSelect}
+                                className="hidden"
+                                accept=".pdf,.txt,.md,.doc,.docx,.png,.jpg,.jpeg"
+                             />
+                             <button 
+                                onClick={() => fileInputRef.current?.click()}
+                                className="w-full h-9 border border-dashed border-slate-300 rounded-lg flex items-center justify-center gap-2 text-slate-500 hover:border-brand-400 hover:text-brand-600 hover:bg-white transition-all text-xs font-bold"
+                             >
+                                <Upload size={12} /> 
+                                <span>Add Your Resources</span>
+                             </button>
+                        </div>
                     </div>
 
                     {/* Input Area */}
@@ -242,74 +322,16 @@ const App: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-
-                        {/* File Upload Zone */}
-                        <div className="mb-3">
-                           <div className="flex flex-wrap gap-2 mb-2">
-                              {attachments.map(att => (
-                                <div key={att.id} className="flex items-center gap-2 bg-brand-50 border border-brand-100 text-brand-700 px-3 py-1.5 rounded-md text-xs font-medium">
-                                  <Paperclip size={12} />
-                                  <span className="truncate max-w-[120px]">{att.name}</span>
-                                  <button onClick={() => removeAttachment(att.id)} className="hover:text-rose-500"><X size={12} /></button>
-                                </div>
-                              ))}
-                           </div>
-                           <input 
-                              type="file" 
-                              ref={fileInputRef}
-                              onChange={handleFileSelect}
-                              className="hidden"
-                              accept=".pdf,.txt,.md,.doc,.docx,.png,.jpg,.jpeg"
-                           />
-                           <button 
-                              onClick={() => fileInputRef.current?.click()}
-                              className="w-full h-12 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center gap-2 text-slate-500 hover:border-brand-400 hover:text-brand-600 hover:bg-brand-50/50 transition-all text-sm font-medium"
-                           >
-                              <Upload size={16} /> 
-                              <span>Attach PDF, Resume, or artifacts</span>
-                           </button>
-                        </div>
                         
-                        {/* Expandable Text Area Container */}
-                        <div className={`relative transition-all duration-300 flex-1 ${isExpanded ? 'fixed inset-0 z-50 bg-white p-8 flex flex-col' : 'flex flex-col'}`}>
-                            {isExpanded && (
-                                <div className="flex justify-between items-center mb-4 pb-4 border-b border-slate-100">
-                                   <div className="font-bold text-lg text-slate-900 flex items-center gap-2">
-                                      {activeConfig.icon}
-                                      {activeConfig.label} Input
-                                      <span className="text-slate-400 font-normal text-sm ml-2">- {activeConfig.shortDesc}</span>
-                                   </div>
-                                   <button 
-                                      onClick={() => setIsExpanded(false)} 
-                                      className="p-2 hover:bg-slate-100 rounded-full text-slate-500 hover:text-slate-900 transition-colors"
-                                      title="Close Full Screen"
-                                   >
-                                      <X size={24} />
-                                   </button>
-                                </div>
-                            )}
-                            
-                            <div className="relative flex-1 group">
-                                <textarea 
-                                    value={inputs[activeTab]}
-                                    onChange={(e) => handleInputChange(activeTab, e.target.value)}
-                                    className={`
-                                      w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
-                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400
-                                      ${!isExpanded ? 'min-h-[140px]' : ''}
-                                    `}
-                                    placeholder={activeConfig.placeholder}
-                                />
-                                {!isExpanded && (
-                                  <button 
-                                    onClick={() => setIsExpanded(true)}
-                                    className="absolute bottom-3 right-3 p-1.5 bg-white border border-slate-200 rounded-md text-slate-400 hover:text-brand-600 hover:border-brand-300 shadow-sm transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"
-                                    title="Expand to Full Screen"
-                                  >
-                                    <Maximize2 size={14} />
-                                  </button>
-                                )}
-                            </div>
+                        {/* Text Area Container */}
+                        <div className="flex flex-col flex-1 group">
+                            <textarea 
+                                value={inputs[activeTab]}
+                                onChange={(e) => handleInputChange(activeTab, e.target.value)}
+                                className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
+                                  focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[140px]"
+                                placeholder={activeConfig.placeholder}
+                            />
                         </div>
 
                         {/* Footer Controls within Card */}
