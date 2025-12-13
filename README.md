@@ -30,7 +30,7 @@ It’s a **prediction of systemic effects**.
 
 ---
 
-## 🧬 Professional DNA (Not a CV)
+## 🧬 Professional DNA
 
 The tool assumes AI has **continuously observed** the person over time.
 
