@@ -240,12 +240,12 @@ const App: React.FC = () => {
       <main className={`
         container mx-auto px-4 print:pt-0 print:pb-0 
         ${!data 
-            ? 'pt-20 pb-10 h-[calc(100vh-1rem)] flex flex-col justify-center' // Input Mode: Centered, Fixed Height
+            ? 'pt-32 pb-12 min-h-screen flex flex-col' // RESIZED: Increased top padding, removed fixed height constraint
             : 'pt-24 pb-20' // Report Mode: Normal Flow, Top Padding for Nav
         }
       `}>
         {!data && (
-            <div className="max-w-5xl mx-auto w-full">
+            <div className="max-w-5xl mx-auto w-full my-auto">
                 
                 <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 px-1 gap-4">
                    <div>
