@@ -1,4 +1,12 @@
+
 export type ViewerType = "founder" | "recruiter" | "team_member" | "client" | "self";
+
+export interface Attachment {
+  id: string;
+  name: string;
+  mimeType: string;
+  data: string; // Base64 string
+}
 
 export interface DiagnosticInputs {
   workTraces: string;

@@ -1,26 +1,28 @@
+
 import { GoogleGenAI } from "@google/genai";
 import { SYSTEM_INSTRUCTION, RESPONSE_SCHEMA } from "../constants";
-import { AntiPortfolioData, ViewerType, DiagnosticInputs } from "../types";
+import { AntiPortfolioData, ViewerType, DiagnosticInputs, Attachment } from "../types";
 
 export const generateDiagnostic = async (
   inputs: DiagnosticInputs,
-  viewer: ViewerType
+  viewer: ViewerType,
+  attachments: Attachment[] = []
 ): Promise<AntiPortfolioData> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-  const prompt = `
+  const textPrompt = `
 Viewer lens: ${viewer}
 Language: it
 Version: v1.1
 
-You will receive structured raw input collected through a multi-section interface.
+You will receive structured raw input collected through a multi-section interface, AND potentially attached documents (PDFs, Images, Text files).
 Each section represents a different type of long-term signal.
 
 The input does NOT represent a single moment in time,
 but an accumulation of traces over the person’s professional life.
 
 Your task:
-Synthesize these signals into a DIAGNOSTIC ANTI-PORTFOLIO JSON,
+Synthesize these signals (both from the text inputs AND the attached documents) into a DIAGNOSTIC ANTI-PORTFOLIO JSON,
 strictly adhering to the schema.
 
 ━━━━━━━━━━━━━━━━━━
@@ -29,27 +31,27 @@ INPUT SECTIONS
 
 SECTION A — WORK TRACES
 (Descriptions of projects, products, decisions, outcomes, artifacts, links)
-${inputs.workTraces || "No data provided."}
+${inputs.workTraces || "No text data provided."}
 
 SECTION B — FRICTION & CONFLICT
 (Repeated tensions, conflicts with people or systems, things that “never worked”)
-${inputs.friction || "No data provided."}
+${inputs.friction || "No text data provided."}
 
 SECTION C — FAILURES & REGRETS
 (Explicit failures, things that went wrong, lessons that still hurt)
-${inputs.failures || "No data provided."}
+${inputs.failures || "No text data provided."}
 
 SECTION D — STRONG PREFERENCES
 (What this person consistently likes, hates, avoids, or insists on)
-${inputs.preferences || "No data provided."}
+${inputs.preferences || "No text data provided."}
 
 SECTION E — NON-NEGOTIABLES
 (Rules, boundaries, principles they refuse to break)
-${inputs.nonNegotiables || "No data provided."}
+${inputs.nonNegotiables || "No text data provided."}
 
 SECTION F — OPTIONAL BACKGROUND SIGNALS
 (CV text, LinkedIn export, bios — treat as LOW-SIGNAL metadata only)
-${inputs.background || "No data provided."}
+${inputs.background || "No text data provided."}
 
 ━━━━━━━━━━━━━━━━━━
 CONSTRAINTS
@@ -64,10 +66,22 @@ CONSTRAINTS
 - Lower confidence explicitly when needed.
 `;
 
+  // Prepare parts: Text Prompt + Attachments
+  const parts: any[] = [{ text: textPrompt }];
+
+  attachments.forEach(att => {
+    parts.push({
+      inlineData: {
+        mimeType: att.mimeType,
+        data: att.data
+      }
+    });
+  });
+
   try {
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash",
-      contents: prompt,
+      contents: { parts: parts },
       config: {
         systemInstruction: SYSTEM_INSTRUCTION,
         responseMimeType: "application/json",
