@@ -240,14 +240,14 @@ const App: React.FC = () => {
       <main className={`
         container mx-auto px-4 print:pt-0 print:pb-0 
         ${!data 
-            ? 'pt-32 pb-12 min-h-screen flex flex-col' // RESIZED: Increased top padding, removed fixed height constraint
+            ? 'pt-16 pb-12 min-h-screen' // REMOVED flex flex-col to avoid vertical center override. pt-24 gives ~40px gap below fixed nav.
             : 'pt-24 pb-20' // Report Mode: Normal Flow, Top Padding for Nav
         }
       `}>
         {!data && (
-            <div className="max-w-5xl mx-auto w-full my-auto">
+            <div className="max-w-5xl mx-auto w-full">
                 
-                <div className="flex flex-col md:flex-row justify-between md:items-end mb-8 px-1 gap-4">
+                <div className="flex flex-col md:flex-row justify-between md:items-end mb-5 px-1 gap-4">
                    <div>
                       <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
                         Reveal Your <span className="text-brand-600">Professional DNA.</span>
