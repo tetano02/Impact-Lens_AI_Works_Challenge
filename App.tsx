@@ -352,44 +352,44 @@ const App: React.FC = () => {
                         {/* Content Container - Conditional Rendering */}
                         <div className="flex flex-col flex-1 group min-h-[120px]">
                             {activeTab === 'identity' ? (
-                                <div className="flex flex-col gap-4 h-full overflow-y-auto pr-2">
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Full Name</label>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 h-full overflow-y-auto pr-2 content-start">
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Full Name</label>
                                         <input 
                                             type="text" 
                                             value={identity.name}
                                             onChange={e => setIdentity(prev => ({...prev, name: e.target.value}))}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
                                             placeholder="e.g. Alex Chen"
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Current Role</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Current Role</label>
                                         <input 
                                             type="text" 
                                             value={identity.role}
                                             onChange={e => setIdentity(prev => ({...prev, role: e.target.value}))}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
                                             placeholder="e.g. Senior Product Manager"
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Location</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Location</label>
                                         <input 
                                             type="text" 
                                             value={identity.location}
                                             onChange={e => setIdentity(prev => ({...prev, location: e.target.value}))}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
                                             placeholder="e.g. London / Remote"
                                         />
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[11px] font-bold uppercase text-slate-400 tracking-wider">Years of Exp.</label>
+                                    <div className="space-y-1">
+                                        <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Years of Exp.</label>
                                         <input 
                                             type="text" 
                                             value={identity.experience}
                                             onChange={e => setIdentity(prev => ({...prev, experience: e.target.value}))}
-                                            className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
+                                            className="w-full bg-slate-50 border border-slate-200 rounded-lg p-2.5 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all placeholder:text-slate-300"
                                             placeholder="e.g. 8"
                                         />
                                     </div>
