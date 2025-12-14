@@ -240,16 +240,16 @@ const App: React.FC = () => {
       <main className={`
         container mx-auto px-4 print:pt-0 print:pb-0 
         ${!data 
-            ? 'pt-16 pb-12 min-h-screen' // REMOVED flex flex-col to avoid vertical center override. pt-24 gives ~40px gap below fixed nav.
+            ? 'pt-24 pb-12 min-h-screen'
             : 'pt-24 pb-20' // Report Mode: Normal Flow, Top Padding for Nav
         }
       `}>
         {!data && (
-            <div className="max-w-5xl mx-auto w-full">
+            <div className="max-w-4xl mx-auto w-full">
                 
                 <div className="flex flex-col md:flex-row justify-between md:items-end mb-5 px-1 gap-4">
                    <div>
-                      <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+                      <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
                         Reveal Your <span className="text-brand-600">Professional DNA.</span>
                       </h1>
                       <div className="h-8 mt-1 overflow-hidden relative">
@@ -264,10 +264,10 @@ const App: React.FC = () => {
                    </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row h-auto md:min-h-[480px]">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row h-auto md:min-h-[420px]">
                     
                     {/* Compact Sidebar Tabs & Tools */}
-                    <div className="w-full md:w-60 bg-slate-50 border-r border-slate-200 flex flex-col">
+                    <div className="w-full md:w-52 bg-slate-50 border-r border-slate-200 flex flex-col">
                         
                         {/* Scrollable Tabs List */}
                         <div className="flex-1 p-2 flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1 scrollbar-hide">
@@ -327,7 +327,7 @@ const App: React.FC = () => {
                     </div>
 
                     {/* Input Area */}
-                    <div className="flex-1 p-4 md:p-6 flex flex-col relative bg-white">
+                    <div className="flex-1 p-4 md:p-5 flex flex-col relative bg-white">
                         
                         {/* Tab Info & Tools */}
                         <div className="flex justify-between items-center mb-3">
@@ -350,7 +350,7 @@ const App: React.FC = () => {
                         </div>
                         
                         {/* Content Container - Conditional Rendering */}
-                        <div className="flex flex-col flex-1 group min-h-[140px]">
+                        <div className="flex flex-col flex-1 group min-h-[120px]">
                             {activeTab === 'identity' ? (
                                 <div className="flex flex-col gap-4 h-full overflow-y-auto pr-2">
                                     <div className="space-y-1.5">
@@ -399,7 +399,7 @@ const App: React.FC = () => {
                                     value={inputs[activeTab]}
                                     onChange={(e) => handleInputChange(activeTab, e.target.value)}
                                     className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
-                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[140px]"
+                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[120px]"
                                     placeholder={activeConfig.placeholder}
                                 />
                             )}
