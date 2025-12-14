@@ -91,6 +91,7 @@ Create `.env.local` and add your Gemini API key:
 ```env
 GEMINI_API_KEY=your_key_here
 ```
+Obviously to obtain better results is suggested to use the Billed API key, not the free one
 
 Run the app:
 
