@@ -264,7 +264,7 @@ const App: React.FC = () => {
                    </div>
                 </div>
 
-                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row h-auto md:min-h-[420px]">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row h-auto md:min-h-[580px]">
                     
                     {/* Compact Sidebar Tabs & Tools */}
                     <div className="w-full md:w-52 bg-slate-50 border-r border-slate-200 flex flex-col">
@@ -350,7 +350,7 @@ const App: React.FC = () => {
                         </div>
                         
                         {/* Content Container - Conditional Rendering */}
-                        <div className="flex flex-col flex-1 group min-h-[120px]">
+                        <div className="flex flex-col flex-1 group min-h-[280px]">
                             {activeTab === 'identity' ? (
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-3 h-full overflow-y-auto pr-2 content-start">
                                     <div className="space-y-1">
@@ -399,7 +399,7 @@ const App: React.FC = () => {
                                     value={inputs[activeTab]}
                                     onChange={(e) => handleInputChange(activeTab, e.target.value)}
                                     className="w-full h-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm font-mono text-slate-700 
-                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[120px]"
+                                      focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 focus:bg-white transition-all resize-none leading-relaxed placeholder-slate-400 min-h-[280px]"
                                     placeholder={activeConfig.placeholder}
                                 />
                             )}
